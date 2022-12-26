@@ -220,7 +220,9 @@ const Header: React.FC<Props> = () => {
               </SearchResultWrapper> */}
             </SearchMenu>
             <Menu>
-              <SignIn>로그인</SignIn>
+              <SignIn>
+                <Link to="/login">로그인</Link>
+              </SignIn>
             </Menu>
             <Menu>
               <SignUp>회원가입</SignUp>
