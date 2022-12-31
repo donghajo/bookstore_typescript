@@ -103,7 +103,6 @@ const MainPage: React.FC = () => {
 
   const [limit, setLimit] = useState(5);
   const [page, setPage] = useState(1);
-  const [posts, setPosts] = useState([]);
   const offset = (page - 1) * limit;
 
   console.log(bookItem);

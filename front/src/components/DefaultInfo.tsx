@@ -14,11 +14,6 @@ const ContentHeader = styled.header`
   align-items: center;
 `;
 
-const Link = styled.a`
-  text-decoration: none;
-  color: #ff2f6e;
-`;
-
 const ContentTitle = styled.h2`
   color: #000;
   font-size: 19px;
@@ -32,8 +27,6 @@ const Summary = styled.div`
   font-weight: 400;
   line-height: 24px;
 `;
-
-const MoreSee = styled.div``;
 
 interface Props {
   title: string;
