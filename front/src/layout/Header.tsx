@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 // import { AiOutlineSearch } from "react-icons/ai";
@@ -43,15 +43,6 @@ const Menu = styled.li`
   }
 `;
 
-const MenuButton = styled.button<{ active?: boolean }>`
-  font-size: 15px;
-  color: ${({ active }) =>
-    active ? "rgb(126, 126, 126)" : "rgb(126, 126, 126)"};
-  cursor: pointer;
-  border: none;
-  background: none;
-`;
-
 const SearchMenu = styled.li`
   width: 300px;
   display: flex;
@@ -77,43 +68,6 @@ const TextLogo = styled.h1`
 const SearchContainer = styled.div`
   position: relative;
   width: 100%;
-`;
-
-const SearchResultWrapper = styled.div`
-  position: absolute;
-  top: 60px;
-  left: 0;
-  z-index: 9999999;
-  background-color: #fff;
-  width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
-  max-height: 480px;
-  overflow-y: scroll;
-`;
-
-const SearchResultListItem = styled.li`
-  padding: 4px 6px;
-  box-sizing: border-box;
-  color: #222;
-  font-size: 16px;
-  width: 100%;
-  height: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  &:hover {
-    background-color: #eee;
-  }
-`;
-
-const SearchResultList = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0;
 `;
 
 const SearchFormWrapper = styled.div``;
@@ -171,7 +125,6 @@ const SignUp = styled.button`
 interface Props {}
 
 const Header: React.FC<Props> = () => {
-  const pathname = window.location.pathname;
   const [searchKeyword, setSearchKeyword] = useState<string>("");
 
   const handleKeyword = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -220,12 +173,14 @@ const Header: React.FC<Props> = () => {
               </SearchResultWrapper> */}
             </SearchMenu>
             <Menu>
-              <SignIn>
-                <Link to="/login">로그인</Link>
-              </SignIn>
+              <Link to="/login">
+                <SignIn>로그인</SignIn>
+              </Link>
             </Menu>
             <Menu>
-              <SignUp>회원가입</SignUp>
+              <Link to="/join">
+                <SignUp>회원가입</SignUp>
+              </Link>
             </Menu>
           </MenuList>
         </MenuListWrapper>

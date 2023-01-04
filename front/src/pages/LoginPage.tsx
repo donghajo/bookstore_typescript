@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const Base = styled.div`
   align-items: center;
   margin: 0 auto;
-  padding-top: 80px;
+  padding-top: 60px;
   width: 100%;
   text-align: center;
   display: flex;
@@ -141,7 +141,9 @@ const LoginPage: React.FC = () => {
           </SocialLoginWrapper>
 
           {/* 회원가입 */}
-          <Button color="register">회원가입</Button>
+          <Link to="/join">
+            <Button color="register">회원가입</Button>
+          </Link>
         </LoginWrapper>
       </Container>
     </Base>
