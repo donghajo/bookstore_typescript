@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DaumPostcode from "react-daum-postcode";
+import { signUpApi } from "../api/auth";
+import { useMutation } from "react-query";
 
 const Base = styled.div`
   align-items: center;
@@ -87,9 +89,51 @@ interface RegisterProps {
   width: string;
 }
 
+interface SignUpdata {
+  id: string;
+  password: string;
+  nickname: string;
+  address: string;
+  detailAddress: string;
+  recommender: string;
+}
+
 const JoinPage: React.FC = () => {
+  let navigate = useNavigate();
+
   const [address, setAddress] = useState(""); // 주소
   const [popup, setPopup] = useState(false);
+  const [signUpdata, setSignUpdata] = useState({
+    id: "",
+    password: "",
+    nickname: "",
+    address: address,
+    detailAddress: "",
+    recommender: "",
+  });
+
+  const mutation = useMutation((signUpdata: SignUpdata) =>
+    signUpApi(signUpdata)
+  );
+
+  const onChange = (e: any) => {
+    setSignUpdata({
+      ...signUpdata,
+      [e.target.name]: e.target.value,
+      address: address,
+    });
+  };
+
+  const signUp = () => {
+    console.log("start");
+    mutation.mutate(signUpdata, {
+      onSuccess: (data) => {
+        if (data?.statusText === "OK") {
+          navigate("/login");
+        }
+      },
+    });
+  };
 
   const complete = (data: any) => {
     let fullAddress = data.address;
@@ -131,26 +175,33 @@ const JoinPage: React.FC = () => {
             <Input
               type="text"
               Pos="top"
+              name="id"
               placeholder="아이디를 입력해 주세요."
+              onChange={onChange}
             />
             <Input
               type="password"
               Pos="bottom"
+              name="password"
               placeholder="비밀번호를 입력해 주세요."
+              onChange={onChange}
             />
             <Input
               type="text"
               Pos="bottom"
+              name="nickname"
               placeholder="닉네임을 입력해 주세요."
+              onChange={onChange}
             />
             <AdressForm>
               <Input
                 Pos="bottom"
                 placeholder="주소"
+                name="address"
                 type="text"
                 width="80%"
                 value={address}
-                onClick={handleComplete}
+                onChange={onChange}
               />
               <Button
                 color=""
@@ -180,22 +231,25 @@ const JoinPage: React.FC = () => {
             <Input
               type="text"
               Pos="bottom"
+              name="detailAddress"
               placeholder="상세주소를 입력해주세요."
+              onChange={onChange}
             />
 
             <Input
               type="text"
               Pos="bottom"
+              name="recommender"
               placeholder="추천인을 입력해주세요."
+              onChange={onChange}
             />
-          </Form>
 
-          {/* 회원가입 */}
-          <Link to="/join">
-            <Button color="register" width="100%">
+            {/* 회원가입 */}
+
+            <Button color="register" width="100%" onClick={signUp}>
               회원가입
             </Button>
-          </Link>
+          </Form>
         </LoginWrapper>
       </Container>
     </Base>
