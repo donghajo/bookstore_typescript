@@ -1,6 +1,5 @@
-export class Result {
+export interface Result {
     msg: string;
-    success: boolean;
-    detail: any;
-
+    status: number;
+    data: Object;
 }

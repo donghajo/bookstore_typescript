@@ -12,11 +12,12 @@ const pool = mysql.createPool({
 pool.getConnection(function (err, connenction) {
     if (err) {
         console.log("DB connect fail : ", err);
+    } else {
+        console.log("DB connect success");
+        connenction.release();
     }
-    console.log("DB connect success");
-    connenction.release();
 });
 
 
 
-export const database = pool.promise();
+module.exports = pool.promise();

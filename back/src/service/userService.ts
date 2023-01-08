@@ -1,25 +1,127 @@
-import { Request, Response } from 'express';
-import { AddUser } from "../data/user";
+import { Signup, Login, JwtUser } from "../data/user";
 import { Result } from "../data/result";
-import { database } from "../model/database";
+const jwt = require('../util/jwtUtil');
+const db = require('../model/database');
 
-export async function addUser(userInfo: AddUser) {
-    try {
-        const existUser = await database.query("select * from user where id = ?", userInfo.id);
-        console.log(existUser[0]);
+export async function addUser(userInfo: Signup) {
+    const result: Result = {
+        status: 500,
+        msg: "server error",
+        data: {},
+    };
+    let isIdExist = false;
+    //validate id already exists
+    await db.query(
+        'select * from user where id = ?',
+        userInfo.id
+    )
+        .then((data: any) => {
+            console.log(data[0]);
 
-        if (existUser[0]) {
-            await database.query("insert into user values ?, ?, ?", userInfo);
-            const result: Result = { msg: "삽입 성공", success: true, detail: userInfo.id };
-            return result;
-        } else {
-            const result: Result = { msg: "삽입 실패", success: false, detail: "이미 존재하는 회원입니다." };
-            return result
-        }
-    } catch (e) {
-        console.log(e);
-        const result: Result = { msg: "삽입 실패", success: false, detail: e };
-        return result
+            if (data[0].length) {
+                isIdExist = true;
+                result.status = 400;
+                result.msg = "id already exist";
+            }
+        })
+        .catch((e: any) => {
+            console.log(e);
+            result.status = 500;
+            result.msg = "server error";
+            return;
+        });
+
+
+    if (!isIdExist) {
+        // insert query
+        await db.query(
+            'insert into user(id, pwd, nickname) values (?, ?, ?)',
+            [
+                userInfo.id,
+                userInfo.pwd,
+                userInfo.nickname
+            ]
+        )
+            .then(() => {
+                //address add query
+                db.query(
+                    'insert into address(zipcode, default_address, detail_address, user_id) values(?, ?, ?, ?)',
+                    [
+                        userInfo.zipcode,
+                        userInfo.defaultAddress,
+                        userInfo.detailAddress,
+                        userInfo.id
+                    ]
+                );
+                // jwt 
+                const user: JwtUser = {
+                    id: userInfo.id,
+                    role: "USER",
+                };
+                const access = jwt.sign(user);
+                const refresh = jwt.refresh();
+                console.log("accessToken >>> ", access);
+                console.log("refreshToken >>> ", refresh);
+
+                result.status = 200;
+                result.msg = "signup success";
+                result.data = {
+                    access,
+                    refresh
+                };
+            })
+            .catch((e: any) => {
+                console.log(e);
+                result.status = 500;
+                result.msg = "server error";
+                return;
+            });
     }
-}
+    console.log("result >>> ", result);
+    return result;
+};
 
+export async function login(userInfo: Login) {
+    const result: Result = {
+        status: 500,
+        msg: "server error",
+        data: {},
+    };
+    await db.query(
+        'select * from user where id = ? and pwd = ?',
+        [
+            userInfo.id,
+            userInfo.pwd
+        ]
+    )
+        .then((data: any) => {
+            if (data[0].length) {
+                const user: JwtUser = {
+                    id: userInfo.id,
+                    role: data[0][0].role,
+                };
+                const access = jwt.sign(user);
+                const refresh = jwt.refresh();
+                console.log("accessToken >>> ", access);
+                console.log("refreshToken >>> ", refresh);
+
+                result.status = 200;
+                result.msg = "login success";
+                result.data = {
+                    access,
+                    refresh
+                };
+            } else {
+                result.status = 401;
+                result.msg = "login fail >>> please check id or password";
+                return;
+            }
+        }).catch((e: any) => {
+            console.log(e);
+            result.status = 500;
+            result.msg = "server error";
+            return;
+        });
+    return result;
+
+}
