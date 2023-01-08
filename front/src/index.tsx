@@ -3,11 +3,12 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 import "./index.css";
 import App from "./App";
+import { ChakraProvider } from "@chakra-ui/react";
 
-if (process.env.NODE_ENV === "development") {
-  const { worker } = require("./mocks/browser");
-  worker.start();
-}
+// if (process.env.NODE_ENV === "development") {
+//   const { worker } = require("./mocks/browser");
+//   worker.start();
+// }
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,8 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <QueryClientProvider client={queryClient}>
-    <App />
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
   </QueryClientProvider>
 );

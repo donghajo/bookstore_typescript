@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import DaumPostcode from "react-daum-postcode";
 import { signUpApi } from "../api/auth";
 import { useMutation } from "react-query";
+import { useToast } from "@chakra-ui/react";
+import { useCookies } from "react-cookie";
 
 const Base = styled.div`
   align-items: center;
@@ -101,6 +103,9 @@ interface SignUpdata {
 const JoinPage: React.FC = () => {
   let navigate = useNavigate();
 
+  const [, setToken] = useCookies(["accessToken"]);
+  const [, setRefresh] = useCookies(["refreshToken"]);
+  const toast = useToast();
   const [address, setAddress] = useState(""); // 주소
   const [popup, setPopup] = useState(false);
   const [signUpdata, setSignUpdata] = useState({
@@ -128,10 +133,17 @@ const JoinPage: React.FC = () => {
     console.log("start");
     mutation.mutate(signUpdata, {
       onSuccess: (data) => {
+        toast({ title: data?.data.msg, status: "success", position: "top" });
+        console.log(data);
         if (data?.statusText === "OK") {
+          setToken("accessToken", data?.data.data.access);
+          setRefresh("refreshToken", data?.data.data.refresh);
           navigate("/login");
         }
       },
+      // onError: (data) => {
+      //   toast({ title: data?.message, })
+      // }
     });
   };
 
