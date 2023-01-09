@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Posts from "../components/Pagination";
 import useBookQuery from "./useBookQuery";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Pagination from "../components/Pagination";
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -15,6 +15,12 @@ const Base = styled.div`
   margin: 0 auto;
   padding-top: 80px;
   width: 100%;
+`;
+
+const MainWrapper = styled.div`
+  margin: 0 auto;
+  max-width: 1200px;
+  display: flex;
 `;
 
 const Aside = styled.aside`
@@ -48,12 +54,6 @@ const List = styled.li`
   line-height: 23px;
   letter-spacing: -0.01em;
   font-weight: 700;
-`;
-
-const MainWrapper = styled.div`
-  margin: 0 auto;
-  max-width: 1200px;
-  display: flex;
 `;
 
 const Main = styled.div`
@@ -227,7 +227,7 @@ const MainPage: React.FC = () => {
             {isLoading ? (
               <></>
             ) : (
-              <Posts
+              <Pagination
                 total={bookItem?.data.detail.length}
                 limit={limit}
                 page={page}

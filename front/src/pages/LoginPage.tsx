@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useMutation } from "react-query";
+import { logInApi } from "../api/auth";
+import { actionTypes, useStateValue } from "../store";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useCookies } from "react-cookie";
 
 const Base = styled.div`
   align-items: center;
@@ -95,7 +101,67 @@ interface RegisterProps {
   color: string;
 }
 
+interface LoginUpdate {
+  id: string;
+  password: string;
+}
+
 const LoginPage: React.FC = () => {
+  const { state } = useLocation();
+  let navigate = useNavigate();
+
+  const [, setToken] = useCookies(["accessToken"]);
+  const [, setRefresh] = useCookies(["refreshToken"]);
+  const [{}, dispatch]: any = useStateValue();
+  const [loginUpdata, setLoginUpdate] = useState({
+    id: "",
+    password: "",
+  });
+
+  const notify = () => {
+    toast("회원가입에에 성공하였습니다!!.", { position: "top-center" });
+  };
+
+  const onChange = (e: any) => {
+    setLoginUpdate({
+      ...loginUpdata,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const mutation = useMutation((signUpdata: LoginUpdate) =>
+    logInApi(signUpdata)
+  );
+
+  const logIn = () => {
+    console.log("Login start");
+    mutation.mutate(loginUpdata, {
+      onSuccess: (data) => {
+        console.log(data?.data.data.access);
+        dispatch({
+          type: actionTypes.SET_TOKEN,
+          value: data?.data.data.access,
+        });
+
+        if (data?.statusText === "OK") {
+          setToken("accessToken", data?.data.data.access);
+          setRefresh("refreshToken", data?.data.data.refresh);
+          navigate("/");
+        }
+      },
+      // onError: (data) => {
+      //   toast({ title: data?.message, })
+      // }
+    });
+  };
+
+  useEffect(() => {
+    console.log(state);
+    if (state === "loginSuccess") {
+      notify();
+    }
+  }, []);
+
   return (
     <Base>
       <Container>
@@ -108,16 +174,22 @@ const LoginPage: React.FC = () => {
             <Input
               type="text"
               Pos="top"
+              name="id"
               placeholder="아이디를 입력해 주세요."
+              onChange={onChange}
             />
             <Input
               type="text"
               Pos="bottom"
+              name="password"
               placeholder="비밀번호를 입력해 주세요."
+              onChange={onChange}
             />
           </Form>
           {/* 아이디, 비밀번호 유효성 메세지 */}
-          <Button color="">로그인</Button>
+          <Button color="" onClick={logIn}>
+            로그인
+          </Button>
           {/* 아이디 저장, 아이디/비밀번호 찾기 */}
           <SaveId>
             <span>
@@ -132,7 +204,11 @@ const LoginPage: React.FC = () => {
             <img
               src="/images/kakao.png"
               alt=""
-              style={{ width: "42px", cursor: "pointer" }}
+              style={{
+                width: "42px",
+                cursor: "pointer",
+                margin: "10px auto 10px",
+              }}
             />
             <p>
               개인정보 보호를 위해 공용 PC에서 사용 시 SNS계정의 로그아웃 상태를
@@ -146,6 +222,7 @@ const LoginPage: React.FC = () => {
           </Link>
         </LoginWrapper>
       </Container>
+      <ToastContainer autoClose={2000} />
     </Base>
   );
 };

@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import DaumPostcode from "react-daum-postcode";
 import { signUpApi } from "../api/auth";
 import { useMutation } from "react-query";
-import { useToast } from "@chakra-ui/react";
-import { useCookies } from "react-cookie";
+import { useStateValue } from "../store";
+import "react-toastify/dist/ReactToastify.css";
 
 const Base = styled.div`
   align-items: center;
@@ -102,10 +102,7 @@ interface SignUpdata {
 
 const JoinPage: React.FC = () => {
   let navigate = useNavigate();
-
-  const [, setToken] = useCookies(["accessToken"]);
-  const [, setRefresh] = useCookies(["refreshToken"]);
-  const toast = useToast();
+  const [{}, dispatch]: any = useStateValue();
   const [address, setAddress] = useState(""); // 주소
   const [popup, setPopup] = useState(false);
   const [signUpdata, setSignUpdata] = useState({
@@ -117,10 +114,6 @@ const JoinPage: React.FC = () => {
     recommender: "",
   });
 
-  const mutation = useMutation((signUpdata: SignUpdata) =>
-    signUpApi(signUpdata)
-  );
-
   const onChange = (e: any) => {
     setSignUpdata({
       ...signUpdata,
@@ -129,21 +122,23 @@ const JoinPage: React.FC = () => {
     });
   };
 
+  const mutation = useMutation((signUpdata: SignUpdata) =>
+    signUpApi(signUpdata)
+  );
+
   const signUp = () => {
     console.log("start");
     mutation.mutate(signUpdata, {
       onSuccess: (data) => {
-        toast({ title: data?.data.msg, status: "success", position: "top" });
-        console.log(data);
+        console.log(data?.data.data.access);
+        // dispatch({
+        //   type: actionTypes.SET_TOKEN,
+        //   value: data?.data.data.access,
+        // });
         if (data?.statusText === "OK") {
-          setToken("accessToken", data?.data.data.access);
-          setRefresh("refreshToken", data?.data.data.refresh);
-          navigate("/login");
+          navigate("/login", { state: "loginSuccess" });
         }
       },
-      // onError: (data) => {
-      //   toast({ title: data?.message, })
-      // }
     });
   };
 

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { actionTypes, useStateValue } from "../store";
+import { useCookies } from "react-cookie";
 // import { AiOutlineSearch } from "react-icons/ai";
 
 // import useMovieSearch from "../features/movie/useMovieSearch";
@@ -126,6 +128,16 @@ interface Props {}
 
 const Header: React.FC<Props> = () => {
   const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const navigate = useNavigate();
+  const [, , removeCookie] = useCookies(["accessToken"]);
+  const [{ token }, dispatch]: any = useStateValue();
+
+  console.log(token);
+  const logOut = () => {
+    removeCookie("accessToken");
+    dispatch({ type: actionTypes.SET_TOKEN, value: null });
+    document.location.href = "/";
+  };
 
   const handleKeyword = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchKeyword(e.target.value);
@@ -172,16 +184,33 @@ const Header: React.FC<Props> = () => {
                 </SearchResultList>
               </SearchResultWrapper> */}
             </SearchMenu>
-            <Menu>
-              <Link to="/login">
-                <SignIn>로그인</SignIn>
-              </Link>
-            </Menu>
-            <Menu>
-              <Link to="/join">
-                <SignUp>회원가입</SignUp>
-              </Link>
-            </Menu>
+            {token ? (
+              <>
+                <Menu>
+                  <Link to="/mypage">
+                    <SignIn>마이페이지</SignIn>
+                  </Link>
+                </Menu>
+                <Menu>
+                  <div onClick={logOut}>
+                    <SignUp>로그아웃</SignUp>
+                  </div>
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Menu>
+                  <Link to="/login">
+                    <SignIn>로그인</SignIn>
+                  </Link>
+                </Menu>
+                <Menu>
+                  <Link to="/join">
+                    <SignUp>회원가입</SignUp>
+                  </Link>
+                </Menu>
+              </>
+            )}
           </MenuList>
         </MenuListWrapper>
       </Navigation>

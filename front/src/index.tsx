@@ -3,7 +3,8 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 import "./index.css";
 import App from "./App";
-import { ChakraProvider } from "@chakra-ui/react";
+import { StateProvider } from "./store/StateProvider";
+import reducer, { initialState } from "./store/reducer";
 
 // if (process.env.NODE_ENV === "development") {
 //   const { worker } = require("./mocks/browser");
@@ -17,8 +18,8 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <QueryClientProvider client={queryClient}>
-    <ChakraProvider>
+    <StateProvider initialState={initialState} reducer={reducer}>
       <App />
-    </ChakraProvider>
+    </StateProvider>
   </QueryClientProvider>
 );
