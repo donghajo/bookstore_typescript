@@ -1,11 +1,11 @@
 import axiosInstance from "./index";
 interface SignUpdata {
   id: string;
-  password: string;
+  pwd: string;
   nickname: string;
-  address: string;
+  zipcode: string;
+  defaultAddress: string;
   detailAddress: string;
-  recommender: string;
 }
 
 interface LoginUpdate {

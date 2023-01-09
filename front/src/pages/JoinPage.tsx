@@ -93,32 +93,34 @@ interface RegisterProps {
 
 interface SignUpdata {
   id: string;
-  password: string;
+  pwd: string;
   nickname: string;
-  address: string;
+  zipcode: string;
+  defaultAddress: string;
   detailAddress: string;
-  recommender: string;
 }
 
 const JoinPage: React.FC = () => {
   let navigate = useNavigate();
   const [{}, dispatch]: any = useStateValue();
   const [address, setAddress] = useState(""); // 주소
+  const [zipCode, setZipCode] = useState("");
   const [popup, setPopup] = useState(false);
   const [signUpdata, setSignUpdata] = useState({
     id: "",
-    password: "",
+    pwd: "",
     nickname: "",
-    address: address,
+    zipcode: zipCode,
+    defaultAddress: address,
     detailAddress: "",
-    recommender: "",
   });
 
   const onChange = (e: any) => {
     setSignUpdata({
       ...signUpdata,
       [e.target.name]: e.target.value,
-      address: address,
+      zipcode: zipCode,
+      defaultAddress: address,
     });
   };
 
@@ -127,7 +129,7 @@ const JoinPage: React.FC = () => {
   );
 
   const signUp = () => {
-    console.log("start");
+    console.log("start", signUpdata);
     mutation.mutate(signUpdata, {
       onSuccess: (data) => {
         console.log(data?.data.data.access);
@@ -161,6 +163,7 @@ const JoinPage: React.FC = () => {
     console.log(data.zonecode);
 
     setAddress(fullAddress);
+    setZipCode(data.zonecode);
     setPopup(!popup);
     console.log(fullAddress);
   };
@@ -189,7 +192,7 @@ const JoinPage: React.FC = () => {
             <Input
               type="password"
               Pos="bottom"
-              name="password"
+              name="pwd"
               placeholder="비밀번호를 입력해 주세요."
               onChange={onChange}
             />
@@ -240,14 +243,6 @@ const JoinPage: React.FC = () => {
               Pos="bottom"
               name="detailAddress"
               placeholder="상세주소를 입력해주세요."
-              onChange={onChange}
-            />
-
-            <Input
-              type="text"
-              Pos="bottom"
-              name="recommender"
-              placeholder="추천인을 입력해주세요."
               onChange={onChange}
             />
 
