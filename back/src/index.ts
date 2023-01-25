@@ -3,10 +3,12 @@ const methodOverride = require('method-override');
 const createError = require('http-errors');
 const app: Application = express();
 const port: number = 3001;
+const cors = require('cors');
 
 const errorController = require('./controller/errorController');
 const userRouter: Router = require('./router/userRouter');
 
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 //body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
