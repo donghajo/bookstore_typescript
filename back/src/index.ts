@@ -7,6 +7,7 @@ const cors = require('cors');
 
 const errorController = require('./controller/errorController');
 const userRouter: Router = require('./router/userRouter');
+const adminRouter: Router = require('./router/adminRouter');
 
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 //body parser
@@ -16,6 +17,7 @@ app.use(methodOverride());
 
 //router
 app.use('/', userRouter);
+app.use('/admin', adminRouter);
 
 //error handler
 app.use(errorController.pageNotFountError);
