@@ -4,8 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import DaumPostcode from "react-daum-postcode";
 import { signUpApi } from "../api/auth";
 import { useMutation } from "react-query";
-import { useStateValue } from "../store";
+import { actionTypes, useStateValue } from "../store";
 import "react-toastify/dist/ReactToastify.css";
+import { useCookies } from "react-cookie";
 
 const Base = styled.div`
   align-items: center;
@@ -102,7 +103,11 @@ interface SignUpdata {
 
 const JoinPage: React.FC = () => {
   let navigate = useNavigate();
+
+  const [, setToken] = useCookies(["accessToken"]);
+  const [, setRefresh] = useCookies(["refreshToken"]);
   const [{}, dispatch]: any = useStateValue();
+
   const [address, setAddress] = useState(""); // 주소
   const [zipCode, setZipCode] = useState("");
   const [popup, setPopup] = useState(false);
@@ -131,14 +136,16 @@ const JoinPage: React.FC = () => {
   const signUp = () => {
     console.log("start", signUpdata);
     mutation.mutate(signUpdata, {
-      onSuccess: (data) => {
-        console.log(data?.data.data.access);
-        // dispatch({
-        //   type: actionTypes.SET_TOKEN,
-        //   value: data?.data.data.access,
-        // });
-        if (data?.statusText === "OK") {
-          navigate("/login", { state: "loginSuccess" });
+      onSuccess: (res) => {
+        console.log(res);
+        dispatch({
+          type: actionTypes.SET_TOKEN,
+          value: res?.data.data.accessToken,
+        });
+        if (res?.statusText === "OK") {
+          setToken("accessToken", res?.data.data.accessToken);
+          setRefresh("refreshToken", res?.data.data.refreshToken);
+          navigate("/");
         }
       },
     });

@@ -12,8 +12,10 @@ interface LoginUpdate {
   id: string;
   password: string;
 }
-export const signUpApi = (data: SignUpdata) =>
-  axiosInstance.post("/signup", data);
+export const signUpApi = (data: SignUpdata) => {
+  return axiosInstance.post("/signup", data);
+};
 
-export const logInApi = (data: LoginUpdate) =>
-  axiosInstance.post("/login", data);
+export const logInApi = (data: LoginUpdate) => {
+  return axiosInstance.post("/login", data, { withCredentials: true });
+};

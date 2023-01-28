@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import useBookQuery from "./useBookQuery";
 import { FaRegCheckCircle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Pagination from "../components/Pagination";
 
 const StyledLink = styled(Link)`

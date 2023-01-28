@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { actionTypes, useStateValue } from "../store";
 import { useCookies } from "react-cookie";
+
 // import { AiOutlineSearch } from "react-icons/ai";
 
 // import useMovieSearch from "../features/movie/useMovieSearch";
@@ -129,10 +130,10 @@ interface Props {}
 const Header: React.FC<Props> = () => {
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const navigate = useNavigate();
-  const [, , removeCookie] = useCookies(["accessToken"]);
-  const [{ token }, dispatch]: any = useStateValue();
 
-  console.log(token);
+  const [, , removeCookie] = useCookies(["accessToken"]);
+  const [{ token, user }, dispatch]: any = useStateValue();
+
   const logOut = () => {
     removeCookie("accessToken");
     dispatch({ type: actionTypes.SET_TOKEN, value: null });
@@ -186,6 +187,13 @@ const Header: React.FC<Props> = () => {
             </SearchMenu>
             {token ? (
               <>
+                {user === "admin" && (
+                  <Menu>
+                    <Link to="/admin">
+                      <SignIn>관리자 페이지</SignIn>
+                    </Link>
+                  </Menu>
+                )}
                 <Menu>
                   <Link to="/mypage">
                     <SignIn>마이페이지</SignIn>

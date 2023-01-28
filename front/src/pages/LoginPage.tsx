@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "react-query";
 import { logInApi } from "../api/auth";
 import { actionTypes, useStateValue } from "../store";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useCookies } from "react-cookie";
 
@@ -107,7 +106,6 @@ interface LoginUpdate {
 }
 
 const LoginPage: React.FC = () => {
-  const { state } = useLocation();
   let navigate = useNavigate();
 
   const [, setToken] = useCookies(["accessToken"]);
@@ -117,10 +115,6 @@ const LoginPage: React.FC = () => {
     id: "",
     password: "",
   });
-
-  const notify = () => {
-    toast("회원가입에에 성공하였습니다!!.", { position: "top-center" });
-  };
 
   const onChange = (e: any) => {
     setLoginUpdate({
@@ -137,12 +131,15 @@ const LoginPage: React.FC = () => {
     console.log("Login start");
     mutation.mutate(loginUpdata, {
       onSuccess: (data) => {
-        console.log(data?.data.data.access);
+        console.log(data);
         dispatch({
           type: actionTypes.SET_TOKEN,
-          value: data?.data.data.access,
+          value: data?.data.data.accessToken,
         });
-
+        dispatch({
+          type: actionTypes.SET_USER,
+          value: data?.data.data.user,
+        });
         if (data?.statusText === "OK") {
           setToken("accessToken", data?.data.data.access);
           setRefresh("refreshToken", data?.data.data.refresh);
@@ -155,12 +152,12 @@ const LoginPage: React.FC = () => {
     });
   };
 
-  useEffect(() => {
-    console.log(state);
-    if (state === "loginSuccess") {
-      notify();
-    }
-  }, []);
+  // useEffect(() => {
+  //   console.log(state);
+  //   if (state === "loginSuccess") {
+  //     notify();
+  //   }
+  // }, []);
 
   return (
     <Base>
@@ -222,7 +219,6 @@ const LoginPage: React.FC = () => {
           </Link>
         </LoginWrapper>
       </Container>
-      <ToastContainer autoClose={2000} />
     </Base>
   );
 };
