@@ -1,6 +1,6 @@
 import { Signup, Login, JwtUser } from "../data/user";
 import { Result } from "../data/result";
-const jwt = require('../util/jwtUtil');
+const jwt = require('../util/jwt.util');
 const db = require('../model/database');
 
 export async function addUser(userInfo: Signup) {
@@ -58,16 +58,16 @@ export async function addUser(userInfo: Signup) {
                     id: userInfo.id,
                     role: "USER",
                 };
-                const access = jwt.sign(user);
-                const refresh = jwt.refresh();
-                console.log("accessToken >>> ", access);
-                console.log("refreshToken >>> ", refresh);
+                const accessToken = jwt.sign(user);
+                const refreshToken = jwt.refresh();
+                console.log("accessToken >>> ", accessToken);
+                console.log("refreshToken >>> ", refreshToken);
 
                 result.status = 200;
                 result.msg = "signup success";
                 result.data = {
-                    access,
-                    refresh
+                    accessToken,
+                    refreshToken
                 };
             })
             .catch((e: any) => {
@@ -100,16 +100,16 @@ export async function login(userInfo: Login) {
                     id: userInfo.id,
                     role: data[0][0].role,
                 };
-                const access = jwt.sign(user);
-                const refresh = jwt.refresh();
-                console.log("accessToken >>> ", access);
-                console.log("refreshToken >>> ", refresh);
+                const accessToken = jwt.sign(user);
+                const refreshToken = jwt.refresh();
+                console.log("accessToken >>> ", accessToken);
+                console.log("refreshToken >>> ", refreshToken);
 
                 result.status = 200;
                 result.msg = "login success";
                 result.data = {
-                    access,
-                    refresh
+                    accessToken,
+                    refreshToken
                 };
             } else {
                 result.status = 401;
