@@ -10,6 +10,7 @@ import JoinPage from "./pages/JoinPage";
 import useCookies from "react-cookie/cjs/useCookies";
 import { actionTypes, useStateValue } from "./store";
 import Mypage from "./pages/Mypage";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
   const [{ token }, dispatch]: any = useStateValue();
@@ -32,6 +33,7 @@ function App() {
         <Route path="/" element={<MainPage />} />
         <Route path="/book/:id" element={<BookDetail />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="/join" element={<JoinPage />} />
         <Route path="/mypage" element={<Mypage />} />
       </Routes>
